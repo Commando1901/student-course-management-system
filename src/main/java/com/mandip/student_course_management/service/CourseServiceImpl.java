@@ -3,8 +3,11 @@ package com.mandip.student_course_management.service;
 import com.mandip.student_course_management.dto.CourseDto;
 import com.mandip.student_course_management.dto.StudentDto;
 import com.mandip.student_course_management.entity.Course;
+import com.mandip.student_course_management.entity.Enrollment;
 import com.mandip.student_course_management.entity.Student;
 import com.mandip.student_course_management.repository.CourseRepository;
+import com.mandip.student_course_management.repository.EnrollmentRepositoy;
+import com.mandip.student_course_management.repository.StudentRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -18,6 +21,8 @@ public class CourseServiceImpl implements CourseService{
 
     private final CourseRepository courseRepository;
     private final ModelMapper modelMapper;
+    private final StudentRepository studentRepository;
+    private final EnrollmentRepositoy enrollmentRepositoy;
 
     @Override
     public CourseDto createCourse(CourseDto courseDto) {
@@ -39,6 +44,18 @@ public class CourseServiceImpl implements CourseService{
                 .orElseThrow(() -> new EntityNotFoundException("Course not found with id: "+id));
 
         return modelMapper.map(course,CourseDto.class);
+    }
+
+    @Override
+    public Page<CourseDto> getCourseByStudentId(Long studentId, Pageable pageable) {
+
+    studentRepository.findById(studentId)
+            .orElseThrow(() -> new EntityNotFoundException("Student not found!"));
+
+    Page<Enrollment> enrollments = enrollmentRepositoy.findByStudentId(studentId, pageable);
+
+    return enrollments.map(enrollment -> modelMapper.map(enrollment.getCourse(), CourseDto.class));
+
     }
 
     @Override

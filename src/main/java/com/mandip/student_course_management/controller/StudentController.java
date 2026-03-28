@@ -68,4 +68,9 @@ public class StudentController {
 
         return studentService.searchStudents(name,pageable);
     }
+
+    @GetMapping("/{id}/students")
+    public Page<StudentDto> getStudentsByCourseId(@PathVariable Long id, Pageable pageable){
+        return studentService.getStudentsByCourseId(id, pageable);
+    }
 }

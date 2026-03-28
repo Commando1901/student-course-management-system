@@ -22,6 +22,7 @@ public interface StudentService {
 //    List<StudentDto> findByName(String name);
 
     Page<StudentDto> searchStudents(String name, Pageable pageable);
+    Page<StudentDto> getStudentsByCourseId(Long courseId, Pageable pageable);
 
     boolean existByEmail(String email);
 }
