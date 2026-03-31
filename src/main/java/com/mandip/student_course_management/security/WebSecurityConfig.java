@@ -8,12 +8,14 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @RequiredArgsConstructor
 public class WebSecurityConfig {
 
     private final PasswordEncoder passwordEncoder;
+    private final JwtAuthFilter jwtAuthFilter;
 
     //here we cconfigure our security filter chain
     @Bean
@@ -46,9 +48,12 @@ public class WebSecurityConfig {
                         sessionConfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/students/**", "/auth/**").permitAll()
-                        .requestMatchers("/api/courses/**").hasRole("ADMIN")
+//                        .requestMatchers("/api/courses/**").hasRole("ADMIN")
+                                .anyRequest().authenticated()
 
-                );
+                )
+                //here we add our jwtauthfilter before the UsernamePasswordAuthenticationFilter
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 //                .formLogin(Customizer.withDefaults());  //we want our login form in future so disabled it
         return httpSecurity.build();
     }

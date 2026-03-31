@@ -1,6 +1,7 @@
 package com.mandip.student_course_management.security;
 
 import com.mandip.student_course_management.entity.User;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,5 +35,19 @@ public class AuthUtil {
                 .expiration(new Date(System.currentTimeMillis() + 1000*60*10)) //expiry at current date + 10minute
                 .signWith(getSecretKey()) // we attached secret key
                 .compact();
+    }
+
+    //get username from token
+    public String getUsernameFromToken(String token) {
+
+        //it return claims to we made object of Claims
+        Claims claims = Jwts.parser()
+                .verifyWith(getSecretKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+
+        //and then fetch getsubject which is username which is string so return it
+        return claims.getSubject();
     }
 }
