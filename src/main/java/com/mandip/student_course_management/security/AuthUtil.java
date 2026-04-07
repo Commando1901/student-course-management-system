@@ -32,7 +32,7 @@ public class AuthUtil {
                 .claim("userId", user.getId().toString())
                 .issuedAt(new Date())   //takes current date
                 //Access token should be <short> lived but if you want user can <login> longer time then we can use concept of refresh token
-                .expiration(new Date(System.currentTimeMillis() + 1000*60*10)) //expiry at current date + 10minute
+                .expiration(new Date(System.currentTimeMillis() + 1000*60*10)) //expiry at current time + 10minute
                 .signWith(getSecretKey()) // we attached secret key
                 .compact();
     }
@@ -40,7 +40,7 @@ public class AuthUtil {
     //get username from token
     public String getUsernameFromToken(String token) {
 
-        //it return claims to we made object of Claims
+        //it return claims to we so made object of Claims
         Claims claims = Jwts.parser()
                 .verifyWith(getSecretKey())
                 .build()
