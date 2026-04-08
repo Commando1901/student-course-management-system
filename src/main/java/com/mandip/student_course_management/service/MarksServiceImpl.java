@@ -1,7 +1,9 @@
 package com.mandip.student_course_management.service;
 
+import com.mandip.student_course_management.dto.CourseDto;
 import com.mandip.student_course_management.dto.MarksDto;
 import com.mandip.student_course_management.entity.Course;
+import com.mandip.student_course_management.entity.Enrollment;
 import com.mandip.student_course_management.entity.Marks;
 import com.mandip.student_course_management.entity.Student;
 import com.mandip.student_course_management.repository.CourseRepository;
@@ -10,6 +12,8 @@ import com.mandip.student_course_management.repository.StudentRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -64,5 +68,47 @@ public class MarksServiceImpl implements MarksService{
         else if(marks >= 50) return "CC";
         else if(marks >= 40) return "CD";
         else return "DD";
+    }
+
+    public MarksDto updateMarks(MarksDto marksDto){
+
+        Marks marks = marksRepository
+                .findByStudent_IdAndCourse_Id(marksDto.getStudentId(), marksDto.getCourseId())
+                        .orElseThrow(() -> new RuntimeException("Marks not exists"));
+
+        if (marks.getMarks() == marksDto.getMarks()) {
+            return modelMapper.map(marks, MarksDto.class);
+        }
+
+        marks.setMarks(marksDto.getMarks());
+        marks.setGrade(calculateGradeLogic(marksDto.getMarks()));
+//        marks.setMarksDate(LocalDateTime.now());
+        return modelMapper.map(marksRepository.save(marks), MarksDto.class);
+
+    }
+
+    public Page<MarksDto> getMarksByStudentId(Long studentId, Pageable pageable){
+
+        if (!studentRepository.existsById(studentId)) {
+            throw new EntityNotFoundException("Student not found");
+        }
+
+        Page<Marks> markPage= marksRepository.findByStudent_Id(studentId,pageable);
+
+        return markPage.map(mark -> modelMapper.map(mark, MarksDto.class));
+
+//        return enrollments.map(enrollment -> modelMapper.map(enrollment.getCourse(), CourseDto.class));
+
+
+//        Page<Enrollment> enrollments = enrollmentRepositoy.findByStudentId(studentId, pageable);
+
+    }
+
+    @Override
+    public Page<MarksDto> getAllMarks(Pageable pageable) {
+
+        Page<Marks> marksPage = marksRepository.findAll(pageable);
+
+        return marksPage.map(mark -> modelMapper.map(mark, MarksDto.class));
     }
 }

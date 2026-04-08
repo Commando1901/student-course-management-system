@@ -1,6 +1,8 @@
 package com.mandip.student_course_management.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -17,6 +19,8 @@ public class Marks {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Min(0)
+    @Max(100)
     private int marks;
 
     private String grade;
