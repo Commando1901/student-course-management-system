@@ -10,6 +10,7 @@ A backend application built with **Spring Boot** that manages students and their
 * 🛡️ JWT Authentication & Authorization
 * 👨‍🎓 Student Management
 * 📚 Course Management
+    *    Marks Management
 * ‍🎓 Enrollment Management
 * 🔒 Secure REST APIs using Spring Security
 * ⚡ Custom Exception Handling
