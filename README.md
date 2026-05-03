@@ -15,6 +15,17 @@ A backend application built with **Spring Boot** that manages students and their
 * 🔒 Secure REST APIs using Spring Security
 * ⚡ Custom Exception Handling
 
+## 📄 Marksheet Feature
+
+- Generate marksheet for a student
+- Displays subject-wise marks
+- Calculates total, percentage, grade, and result
+- Download marksheet as PDF using html2pdf
+
+## 🔗 API Endpoint
+
+GET /marksheet/{studentId}
+
 ---
 
 ## 🛠️ Tech Stack
@@ -26,6 +37,12 @@ A backend application built with **Spring Boot** that manages students and their
 * 🗄️ Hibernate / JPA
 * 🐬 MySQL
 * 📦 Maven
+
+## 🛠️ Tech Used for Marksheet
+
+- Spring Boot (Backend)
+- HTML, CSS, JavaScript (Frontend)
+- html2pdf.js (PDF generation)
 
 ---
 
