@@ -1,6 +1,7 @@
 package com.mandip.student_course_management.security;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -12,10 +13,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @RequiredArgsConstructor
+@Slf4j
 public class WebSecurityConfig {
 
     private final PasswordEncoder passwordEncoder;
     private final JwtAuthFilter jwtAuthFilter;
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
 
     //here we cconfigure our security filter chain
     @Bean
@@ -41,20 +44,30 @@ public class WebSecurityConfig {
 //we can also authenticate using given user roles
 //but for that we have to create roles for user we can create roles in application properties or using UserDetailsService
         httpSecurity
-                //here we disabled login form cause we can make our login form in react or as per choice
-                //and cause we used jwt token so we don't need session management so now we have to disabled session using csrf disabled and session stateless
+                .cors(Customizer.withDefaults())
                 .csrf(csrfConfig -> csrfConfig.disable())
                 .sessionManagement(sessionConfig ->
                         sessionConfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/students/**", "/auth/**").permitAll()
+                                .requestMatchers("/api/students/**", "/auth/**", "/api/enrollments/**", "/api/courses/**", "/api/marks/**").permitAll()
 //                        .requestMatchers("/api/courses/**").hasRole("ADMIN")
                                 .anyRequest().authenticated()
 
                 )
                 //here we add our jwtauthfilter before the UsernamePasswordAuthenticationFilter
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+
+                //this makes basic frontend for us
+                .oauth2Login(oAuth2 -> oAuth2
+                        .failureHandler(
+                                (request, response, exception) -> {
+                                    log.error("Oauth2 error: {}", exception.getMessage());
+                                })
+                        .successHandler(oAuth2SuccessHandler)
+
+                );
 //                .formLogin(Customizer.withDefaults());  //we want our login form in future so disabled it
+
         return httpSecurity.build();
     }
 

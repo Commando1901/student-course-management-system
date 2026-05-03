@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface MarksRepository extends JpaRepository<Marks, Long>{
@@ -15,4 +16,6 @@ public interface MarksRepository extends JpaRepository<Marks, Long>{
     Optional<Marks> findByStudent_IdAndCourse_Id(Long studentId, Long courseId);
 
     Page<Marks> findByStudent_Id(Long studentId, Pageable pageable);
+
+    List<Marks> findByStudent_Id(Long studentId);
 }

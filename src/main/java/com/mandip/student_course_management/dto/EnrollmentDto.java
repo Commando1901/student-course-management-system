@@ -9,6 +9,7 @@ import lombok.*;
 @Setter
 @Builder
 public class EnrollmentDto {
+    private Long id;
     private Long studentId;
     private Long courseId;
 //    private String grade;

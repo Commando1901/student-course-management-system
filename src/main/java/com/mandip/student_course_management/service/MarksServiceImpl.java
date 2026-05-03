@@ -7,6 +7,7 @@ import com.mandip.student_course_management.entity.Enrollment;
 import com.mandip.student_course_management.entity.Marks;
 import com.mandip.student_course_management.entity.Student;
 import com.mandip.student_course_management.repository.CourseRepository;
+import com.mandip.student_course_management.repository.EnrollmentRepositoy;
 import com.mandip.student_course_management.repository.MarksRepository;
 import com.mandip.student_course_management.repository.StudentRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -17,6 +18,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +29,7 @@ public class MarksServiceImpl implements MarksService{
     private final MarksRepository marksRepository;
     private final StudentRepository studentRepository;
     private final CourseRepository courseRepository;
+    private final EnrollmentRepositoy enrollmentRepositoy;
 
     @Override
     public MarksDto addMarks(MarksDto marksDto) {
@@ -38,6 +42,11 @@ public class MarksServiceImpl implements MarksService{
 
         if(exists){
             throw new RuntimeException("Marks of student of course already exists!");
+        }
+
+        boolean isEnrolled = enrollmentRepositoy.existsByStudentIdAndCourseId(marksDto.getStudentId(), marksDto.getCourseId());
+        if (!isEnrolled) {
+            throw new RuntimeException("Student is not enrolled in this course!");
         }
 
         int marks = marksDto.getMarks();
@@ -110,5 +119,18 @@ public class MarksServiceImpl implements MarksService{
         Page<Marks> marksPage = marksRepository.findAll(pageable);
 
         return marksPage.map(mark -> modelMapper.map(mark, MarksDto.class));
+    }
+
+    public List<MarksDto> getMarksByStudentId(Long studentId){
+
+        if (!studentRepository.existsById(studentId)) {
+            throw new EntityNotFoundException("Student not found");
+        }
+
+        List<Marks> marksList= marksRepository.findByStudent_Id(studentId);
+
+        return marksList.stream()
+                .map(marks -> modelMapper.map(marks, MarksDto.class))
+                .toList();
     }
 }

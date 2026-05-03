@@ -20,9 +20,6 @@ public class StudentController {
     private final StudentService studentService;
 
     @GetMapping
-//    public List<StudentDto> getAllStudents(){
-//        return studentService.getAllStudents();
-//    }
     public Page<StudentDto> getStudents(Pageable pageable){
         return studentService.getStudents(pageable);
     }
